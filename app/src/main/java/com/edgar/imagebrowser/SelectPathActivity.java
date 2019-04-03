@@ -1,15 +1,18 @@
 package com.edgar.imagebrowser;
 
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 public class SelectPathActivity extends AppCompatActivity {
+
+    private static final String ROOT_PATH = Environment.getExternalStorageDirectory().getPath();
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
@@ -20,8 +23,6 @@ public class SelectPathActivity extends AppCompatActivity {
             }
         }
     };
-
-    private RecyclerView rvFolderList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +41,11 @@ public class SelectPathActivity extends AppCompatActivity {
             }
         });
 
-        rvFolderList = findViewById(R.id.rv_folder_list);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        rvFolderList.setLayoutManager(layoutManager);
+        FolderListFragment listFragment = FolderListFragment.newInstance(ROOT_PATH);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.folders_fragment, listFragment);
+        fragmentTransaction.commit();
 
     }
 
