@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">ImageBrowser</string>
+    <string name="STRING_MENU_ITEM_SELECT_PATH">Select Path</string>
+    <string name="STRING_SELECT_PATH_ACTIVITY_TITLE">Select Path</string>
+    <string name="STRING_MENU_ITEM_CONFIRM">Confirm</string>
 </resources>

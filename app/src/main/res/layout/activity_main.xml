@@ -12,7 +12,7 @@
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/my_toolbar"
+            android:id="@+id/main_toolbar"
             style="@style/MyToolbarStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -22,5 +22,13 @@
             app:title="@string/app_name" />
 
     </android.support.design.widget.AppBarLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_manga_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp" />
 
 </android.support.design.widget.CoordinatorLayout>
