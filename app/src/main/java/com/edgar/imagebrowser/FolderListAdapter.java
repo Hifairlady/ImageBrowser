@@ -1,6 +1,7 @@
 package com.edgar.imagebrowser;
 
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,9 +13,14 @@ import java.util.ArrayList;
 public class FolderListAdapter extends RecyclerView.Adapter {
 
     private ArrayList<String> folderNameList;
+    private MyOnItemClickListener mOnItemClickListener;
 
     public FolderListAdapter(ArrayList<String> folderNameList) {
         this.folderNameList = folderNameList;
+    }
+
+    public void setOnItemClickListener(MyOnItemClickListener onItemClickListener) {
+        this.mOnItemClickListener = onItemClickListener;
     }
 
     @NonNull
@@ -27,8 +33,14 @@ public class FolderListAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-        NormalViewHolder vh = (NormalViewHolder) viewHolder;
+        final NormalViewHolder vh = (NormalViewHolder) viewHolder;
         vh.tvFolderPath.setText(folderNameList.get(i));
+        vh.itemLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnItemClickListener.onItemClick(v, vh.getAdapterPosition());
+            }
+        });
     }
 
     @Override
@@ -36,13 +48,19 @@ public class FolderListAdapter extends RecyclerView.Adapter {
         return (folderNameList == null ? 0 : folderNameList.size());
     }
 
+    public interface MyOnItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
     private class NormalViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView tvFolderPath;
+        private TextView tvFolderPath;
+        private ConstraintLayout itemLayout;
 
-        public NormalViewHolder(@NonNull View itemView) {
+        private NormalViewHolder(@NonNull View itemView) {
             super(itemView);
             tvFolderPath = itemView.findViewById(R.id.tv_folderPathName);
+            itemLayout = itemView.findViewById(R.id.item_container_layout);
         }
     }
 

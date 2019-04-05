@@ -2,10 +2,11 @@ package com.edgar.imagebrowser;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,8 @@ public class FolderListFragment extends Fragment {
     private RecyclerView rvFolderList;
     private ArrayList<String> folderPathList = new ArrayList<>();
     private TextView tvCurAbsPath;
+    private FolderListAdapter adapter;
+    private CallbackValue mCallbackValue;
 
     public FolderListFragment() {
         // Required empty public constructor
@@ -46,21 +49,49 @@ public class FolderListFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_folder_list, container, false);
 
         tvCurAbsPath = view.findViewById(R.id.tv_curAbsPath);
-        Log.d(TAG, "onCreateView: " + requestPath);
+        tvCurAbsPath.setText("");
+
+        rvFolderList = view.findViewById(R.id.rv_folder_list);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        ((LinearLayoutManager) layoutManager).setOrientation(LinearLayoutManager.VERTICAL);
+        rvFolderList.setLayoutManager(layoutManager);
+        adapter = new FolderListAdapter(folderPathList);
+        rvFolderList.setAdapter(adapter);
+
+        adapter.setOnItemClickListener(new FolderListAdapter.MyOnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                String nextPath;
+                if (folderPathList.get(position).equals("...") && position == 0) {
+                    File file = new File(requestPath);
+                    nextPath = file.getParentFile().getAbsolutePath();
+                } else {
+                    nextPath = requestPath + "/" + folderPathList.get(position);
+                }
+                mCallbackValue.onValueCallback(nextPath);
+            }
+        });
+
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         folderPathList.clear();
-        if (requestPath == null) return view;
+        if (requestPath == null) return;
         tvCurAbsPath.setText(requestPath);
         File curDir = new File(requestPath);
         if (!curDir.exists() || !curDir.isDirectory()) {
             Objects.requireNonNull(getActivity()).finish();
-            return view;
+            return;
         }
 
         File[] childFolders = curDir.listFiles();
@@ -76,13 +107,19 @@ public class FolderListFragment extends Fragment {
             }
         });
 
-        rvFolderList = view.findViewById(R.id.rv_folder_list);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        ((LinearLayoutManager) layoutManager).setOrientation(LinearLayoutManager.VERTICAL);
-        rvFolderList.setLayoutManager(layoutManager);
-        FolderListAdapter adapter = new FolderListAdapter(folderPathList);
-        rvFolderList.setAdapter(adapter);
+        if (!requestPath.equals(SelectPathActivity.ROOT_PATH)) {
+            folderPathList.add(0, "...");
+        }
 
-        return view;
+        adapter.notifyDataSetChanged();
     }
+
+    public void setCallbackValue(CallbackValue callbackValue) {
+        this.mCallbackValue = callbackValue;
+    }
+
+    public interface CallbackValue {
+        void onValueCallback(String nextPath);
+    }
+
 }

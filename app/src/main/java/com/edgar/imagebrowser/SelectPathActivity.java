@@ -6,13 +6,25 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.io.File;
+
 public class SelectPathActivity extends AppCompatActivity {
 
-    private static final String ROOT_PATH = Environment.getExternalStorageDirectory().getPath();
+    public static final String ROOT_PATH = Environment.getExternalStorageDirectory().getPath();
+    private static final String TAG = "==========" + SelectPathActivity.class.getName();
+    private String last_path = ROOT_PATH;
+
+    private FolderListFragment.CallbackValue mCallbackValue = new FolderListFragment.CallbackValue() {
+        @Override
+        public void onValueCallback(String nextPath) {
+            switchFragment(nextPath);
+        }
+    };
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
@@ -41,11 +53,7 @@ public class SelectPathActivity extends AppCompatActivity {
             }
         });
 
-        FolderListFragment listFragment = FolderListFragment.newInstance(ROOT_PATH);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.folders_fragment, listFragment);
-        fragmentTransaction.commit();
+        switchFragment(ROOT_PATH);
 
     }
 
@@ -65,5 +73,28 @@ public class SelectPathActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void switchFragment(String requestPath) {
+        if (!requestPath.equals(ROOT_PATH)) {
+            File file = new File(requestPath);
+            last_path = file.getParentFile().getAbsolutePath();
+        } else {
+            last_path = ROOT_PATH;
+        }
+        FolderListFragment listFragment = FolderListFragment.newInstance(requestPath);
+        listFragment.setCallbackValue(mCallbackValue);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.folders_fragment, listFragment);
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            switchFragment(last_path);
+        }
+        return false;
     }
 }
