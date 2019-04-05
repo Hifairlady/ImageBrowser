@@ -1,5 +1,6 @@
-package com.edgar.imagebrowser;
+package com.edgar.imagebrowser.SelectPath;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +12,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.edgar.imagebrowser.R;
+
 import java.io.File;
 
 public class SelectPathActivity extends AppCompatActivity {
@@ -18,6 +21,7 @@ public class SelectPathActivity extends AppCompatActivity {
     public static final String ROOT_PATH = Environment.getExternalStorageDirectory().getPath();
     private static final String TAG = "==========" + SelectPathActivity.class.getName();
     private String last_path = ROOT_PATH;
+    private String finalPath = ROOT_PATH;
 
     private FolderListFragment.CallbackValue mCallbackValue = new FolderListFragment.CallbackValue() {
         @Override
@@ -49,6 +53,7 @@ public class SelectPathActivity extends AppCompatActivity {
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setResult(RESULT_CANCELED);
                 finish();
             }
         });
@@ -67,6 +72,10 @@ public class SelectPathActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.mi_confirm_select:
+                Intent intent = new Intent();
+                intent.putExtra("WORK_PATH", finalPath);
+                setResult(RESULT_OK, intent);
+                finish();
                 break;
 
             default:
@@ -80,8 +89,9 @@ public class SelectPathActivity extends AppCompatActivity {
             File file = new File(requestPath);
             last_path = file.getParentFile().getAbsolutePath();
         } else {
-            last_path = ROOT_PATH;
+            last_path = "";
         }
+        finalPath = requestPath;
         FolderListFragment listFragment = FolderListFragment.newInstance(requestPath);
         listFragment.setCallbackValue(mCallbackValue);
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -92,7 +102,7 @@ public class SelectPathActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && !last_path.equals("")) {
             switchFragment(last_path);
         }
         return false;

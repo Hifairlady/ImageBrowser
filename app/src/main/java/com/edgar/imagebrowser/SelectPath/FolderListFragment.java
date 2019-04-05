@@ -1,22 +1,25 @@
-package com.edgar.imagebrowser;
+package com.edgar.imagebrowser.SelectPath;
 
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.edgar.imagebrowser.R;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Objects;
 
 public class FolderListFragment extends Fragment {
     private static final String REQUEST_PATH = "REQUEST_PATH";
@@ -85,33 +88,9 @@ public class FolderListFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        folderPathList.clear();
         if (requestPath == null) return;
         tvCurAbsPath.setText(requestPath);
-        File curDir = new File(requestPath);
-        if (!curDir.exists() || !curDir.isDirectory()) {
-            Objects.requireNonNull(getActivity()).finish();
-            return;
-        }
-
-        File[] childFolders = curDir.listFiles();
-        for (File folder : childFolders) {
-            if (folder.isDirectory() && !folder.getName().startsWith(".")) {
-                folderPathList.add(folder.getName());
-            }
-        }
-        Collections.sort(folderPathList, new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.toLowerCase().compareTo(o2.toLowerCase());
-            }
-        });
-
-        if (!requestPath.equals(SelectPathActivity.ROOT_PATH)) {
-            folderPathList.add(0, "...");
-        }
-
-        adapter.notifyDataSetChanged();
+        new AddPathTask().execute(requestPath);
     }
 
     public void setCallbackValue(CallbackValue callbackValue) {
@@ -120,6 +99,42 @@ public class FolderListFragment extends Fragment {
 
     public interface CallbackValue {
         void onValueCallback(String nextPath);
+    }
+
+    private class AddPathTask extends AsyncTask<String, Void, Void> {
+        @Override
+        protected Void doInBackground(String... strings) {
+            folderPathList.clear();
+            String filePath = strings[0];
+            Log.d(TAG, "doInBackground: " + filePath);
+            File curDir = new File(filePath);
+            if (!curDir.exists() || !curDir.isDirectory()) return null;
+
+            File[] childFolders = curDir.listFiles();
+            if (!requestPath.equals(SelectPathActivity.ROOT_PATH)) {
+                folderPathList.add(0, "...");
+            }
+
+
+            for (File folder : childFolders) {
+                if (folder.isDirectory() && !folder.getName().startsWith(".")) {
+                    folderPathList.add(folder.getName());
+                }
+            }
+            Collections.sort(folderPathList, new Comparator<String>() {
+                @Override
+                public int compare(String o1, String o2) {
+                    return o1.toLowerCase().compareTo(o2.toLowerCase());
+                }
+            });
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            adapter.notifyDataSetChanged();
+        }
     }
 
 }
