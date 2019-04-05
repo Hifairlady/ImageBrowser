@@ -1,7 +1,5 @@
 package com.edgar.imagebrowser;
 
-import android.util.Log;
-
 import java.io.File;
 import java.util.ArrayList;
 
@@ -13,7 +11,6 @@ public class MangaItem {
     public MangaItem(String url, String titleString) {
         this.titleString = titleString;
         this.urlString = url;
-        Log.d(TAG, "MangaItem: " + url);
         setCoverPathFromUrl(url);
     }
 

@@ -17,9 +17,9 @@ public class MangaListAdapter extends RecyclerView.Adapter {
     private Context mContext;
     private ArrayList<MangaItem> mangaItems = new ArrayList<>();
 
-    public MangaListAdapter(Context mContext, ArrayList<MangaItem> mangaItems) {
+    public MangaListAdapter(Context mContext) {
         this.mContext = mContext;
-        this.mangaItems = mangaItems;
+//        this.mangaItems = mangaItems;
     }
 
     @NonNull
@@ -63,6 +63,22 @@ public class MangaListAdapter extends RecyclerView.Adapter {
             ivCoverImage = itemView.findViewById(R.id.iv_cover_image);
             tvTitle = itemView.findViewById(R.id.tv_manga_title);
         }
+    }
+
+    public void addAllItems(ArrayList<MangaItem> items) {
+        int startPos = mangaItems.size();
+        this.mangaItems.addAll(items);
+        notifyItemRangeInserted(startPos, items.size());
+    }
+
+    public void addItem(MangaItem item) {
+        this.mangaItems.add(item);
+    }
+
+    public void removeAllItems() {
+        int itemCount = mangaItems.size();
+        mangaItems.clear();
+        notifyItemRangeRemoved(0, itemCount);
     }
 
 }
