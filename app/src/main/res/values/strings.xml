@@ -8,4 +8,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="STRING_FOLDER_PATH_NAME">folder path name here</string>
     <string name="STRING_CURRENT_ABS_PATH">Current absolute path</string>
+    <string name="STRING_MANGA_TITLE">Display manga title here</string>
 </resources>

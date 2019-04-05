@@ -14,12 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.edgar.imagebrowser.MyUtils;
 import com.edgar.imagebrowser.R;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class FolderListFragment extends Fragment {
     private static final String REQUEST_PATH = "REQUEST_PATH";
@@ -115,18 +114,12 @@ public class FolderListFragment extends Fragment {
                 folderPathList.add(0, "...");
             }
 
-
             for (File folder : childFolders) {
                 if (folder.isDirectory() && !folder.getName().startsWith(".")) {
                     folderPathList.add(folder.getName());
                 }
             }
-            Collections.sort(folderPathList, new Comparator<String>() {
-                @Override
-                public int compare(String o1, String o2) {
-                    return o1.toLowerCase().compareTo(o2.toLowerCase());
-                }
-            });
+            MyUtils.sortStringList(folderPathList);
             return null;
         }
 
