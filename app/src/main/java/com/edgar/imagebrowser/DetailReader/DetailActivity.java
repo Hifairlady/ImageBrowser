@@ -1,4 +1,4 @@
-package com.edgar.imagebrowser;
+package com.edgar.imagebrowser.DetailReader;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -10,13 +10,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import com.edgar.imagebrowser.SelectPath.SelectPathActivity;
+import com.edgar.imagebrowser.R;
 
 import java.util.ArrayList;
 
 public class DetailActivity extends AppCompatActivity {
 
+    private static final String TAG = "=========" + DetailActivity.class.getName();
     private String urlString;
+    private String titleString;
     private ArrayList<String> allFolderNames;
     private int curFolderPosition;
     private Button btnLastDir, btnNextDir;
@@ -31,9 +33,9 @@ public class DetailActivity extends AppCompatActivity {
                     if (curFolderPosition > 0) {
                         curFolderPosition--;
                         switchReader(allFolderNames.get(curFolderPosition));
-                        String titleString = String.valueOf(curFolderPosition + 1) + "/"
+                        String indexString = String.valueOf(curFolderPosition + 1) + "/"
                                 + String.valueOf(maxPosition + 1);
-                        menuItem.setTitle(titleString);
+                        menuItem.setTitle(indexString);
                     }
                     break;
 
@@ -41,9 +43,9 @@ public class DetailActivity extends AppCompatActivity {
                     if (curFolderPosition < maxPosition) {
                         curFolderPosition++;
                         switchReader(allFolderNames.get(curFolderPosition));
-                        String titleString = String.valueOf(curFolderPosition + 1) + "/"
+                        String indexString = String.valueOf(curFolderPosition + 1) + "/"
                                 + String.valueOf(maxPosition + 1);
-                        menuItem.setTitle(titleString);
+                        menuItem.setTitle(indexString);
                     }
                     break;
 
@@ -58,8 +60,9 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        initView();
         initData();
+        initView();
+
     }
 
     private void initView() {
@@ -68,6 +71,7 @@ public class DetailActivity extends AppCompatActivity {
         if (getSupportActionBar() == null) {
             setSupportActionBar(mToolbar);
         }
+        mToolbar.setTitle(titleString);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,17 +84,17 @@ public class DetailActivity extends AppCompatActivity {
 
         btnLastDir.setOnClickListener(mOnClickListener);
         btnNextDir.setOnClickListener(mOnClickListener);
+        switchReader(urlString);
 
     }
 
     private void initData() {
 
-        urlString = getIntent().getStringExtra("URL_STRING");
-        urlString = (urlString == null ? SelectPathActivity.ROOT_PATH : urlString);
         allFolderNames = getIntent().getStringArrayListExtra("ALL_FOLDER_NAMES");
         curFolderPosition = getIntent().getIntExtra("CUR_FOLDER_POSITION", 0);
+        titleString = getIntent().getStringExtra("TITLE_STRING");
+        urlString = allFolderNames.get(curFolderPosition);
         maxPosition = allFolderNames.size() - 1;
-        switchReader(urlString);
     }
 
     private void switchReader(String requestPath) {

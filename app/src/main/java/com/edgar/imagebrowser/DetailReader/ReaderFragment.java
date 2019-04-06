@@ -1,4 +1,4 @@
-package com.edgar.imagebrowser;
+package com.edgar.imagebrowser.DetailReader;
 
 
 import android.os.Bundle;
@@ -11,6 +11,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.edgar.imagebrowser.MyUtils;
+import com.edgar.imagebrowser.R;
 
 import java.io.File;
 import java.util.ArrayList;

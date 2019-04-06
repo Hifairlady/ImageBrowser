@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.edgar.imagebrowser.DetailReader.DetailActivity;
 import com.edgar.imagebrowser.MainMangaList.MangaItem;
 import com.edgar.imagebrowser.MainMangaList.MangaListAdapter;
 import com.edgar.imagebrowser.SelectPath.SelectPathActivity;
@@ -37,9 +38,9 @@ public class MainActivity extends AppCompatActivity {
     private MangaListAdapter.OnItemClickListener mOnItemClickListener = new MangaListAdapter.OnItemClickListener() {
         @Override
         public void onItemClick(MangaItem mangaItem, int position) {
-            String urlString = mangaItem.getUrlString();
+            String titleString = mangaItem.getTitleString();
             Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-            intent.putExtra("URL_STRING", urlString);
+            intent.putExtra("TITLE_STRING", titleString);
             intent.putExtra("ALL_FOLDER_NAMES", allFolderNames);
             intent.putExtra("CUR_FOLDER_POSITION", position);
             startActivity(intent);
@@ -134,6 +135,10 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("StaticFieldLeak")
     private class GetMangasTask extends AsyncTask<String, Integer, Void> {
+
+        public GetMangasTask() {
+            Snackbar.make(rvMangaList, "Loading...", Snackbar.LENGTH_SHORT).show();
+        }
 
         @Override
         protected Void doInBackground(String... strings) {

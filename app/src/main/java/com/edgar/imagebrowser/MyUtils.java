@@ -9,6 +9,8 @@ import java.util.Comparator;
 
 public class MyUtils {
 
+    private static final String TAG = "==================" + MyUtils.class.getName();
+
     public static void sortStringList(ArrayList<String> stringArrayList) {
         Collections.sort(stringArrayList, new Comparator<String>() {
             @Override
@@ -18,13 +20,28 @@ public class MyUtils {
         });
     }
 
-    public static ArrayList<String> sortFilesByDirectory(File curDir) {
-        File[] childFolders = curDir.listFiles();
+//    public static ArrayList<String> sortFilesByDirectory(File curDir) {
+//        File[] childFolders = curDir.listFiles();
+//        ArrayList<String> result = new ArrayList<>();
+//        for (File childFolder : childFolders) {
+//            if (childFolder.isDirectory() && childFolder.exists() && childFolder.list().length != 0
+//                    && !childFolder.getName().startsWith(".")) {
+//                result.add(childFolder.getAbsolutePath());
+//            }
+//        }
+//        sortStringList(result);
+//        return result;
+//    }
+
+    public static ArrayList<String> sortFilesByDirectory(File workDir) {
+        String workPath = workDir.getAbsolutePath();
+        String[] filenames = workDir.list();
         ArrayList<String> result = new ArrayList<>();
-        for (File childFolder : childFolders) {
-            if (childFolder.isDirectory() && childFolder.exists() && childFolder.list().length != 0
-                    && !childFolder.getName().startsWith(".")) {
-                result.add(childFolder.getAbsolutePath());
+        for (String filename : filenames) {
+            String childPath = workPath + "/" + filename;
+            File childFolder = new File(childPath);
+            if (childFolder.isDirectory() && childFolder.exists() && !filename.startsWith(".")) {
+                result.add(childPath);
             }
         }
         sortStringList(result);

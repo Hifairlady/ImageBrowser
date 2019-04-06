@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DetailActivity">
+    tools:context=".DetailReader.DetailActivity">
 
     <!--app toolbar here-->
     <android.support.design.widget.AppBarLayout
@@ -28,7 +28,7 @@
 
     <fragment
         android:id="@+id/reader_container"
-        android:name="com.edgar.imagebrowser.ReaderFragment"
+        android:name="com.edgar.imagebrowser.DetailReader.ReaderFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/iv_divider"

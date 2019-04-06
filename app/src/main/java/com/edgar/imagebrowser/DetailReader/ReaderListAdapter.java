@@ -1,4 +1,4 @@
-package com.edgar.imagebrowser;
+package com.edgar.imagebrowser.DetailReader;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import com.edgar.imagebrowser.GlideApp;
+import com.edgar.imagebrowser.R;
 
 import java.io.File;
 import java.util.ArrayList;
