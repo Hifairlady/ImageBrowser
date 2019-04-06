@@ -108,7 +108,9 @@ public class SelectPathActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && !last_path.equals("")) {
             switchFragment(last_path);
+            return false;
         }
-        return false;
+        finish();
+        return true;
     }
 }

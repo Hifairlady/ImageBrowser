@@ -8,6 +8,8 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -17,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int CODE_REQUEST_PATH = 101;
     private static final int CODE_REQUEST_PERMISSION = 102;
+    private static final int CODE_EXIT_PROGRAM = 103;
     private static final String TAG = "=========" + MainActivity.class.getName();
 
     private String workPath = Environment.getExternalStorageDirectory().getPath();
@@ -43,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> allFolderNames;
 
     private boolean hasPermission = false;
+    private boolean isExit = false;
 
     private MangaListAdapter.OnItemClickListener mOnItemClickListener = new MangaListAdapter.OnItemClickListener() {
         @Override
@@ -232,4 +237,39 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
+
+    //handle double click return key to exit
+    @SuppressLint("HandlerLeak")
+    private Handler exitHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == CODE_EXIT_PROGRAM) {
+                isExit = false;
+            }
+        }
+    };
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            exit();
+            return false;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private void exit() {
+        if (!isExit) {
+            isExit = true;
+            Snackbar.make(rvMangaList, "One more click to exit the program",
+                    Snackbar.LENGTH_SHORT).show();
+            // exit after 2 seconds
+            exitHandler.sendEmptyMessageDelayed(CODE_EXIT_PROGRAM, 2000);
+        } else {
+            finish();
+            System.exit(0);
+        }
+    }
+
 }
