@@ -1,19 +1,25 @@
 package com.edgar.imagebrowser;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.edgar.imagebrowser.DetailReader.DetailActivity;
 import com.edgar.imagebrowser.MainMangaList.MangaItem;
@@ -27,6 +33,7 @@ import java.util.Arrays;
 public class MainActivity extends AppCompatActivity {
 
     private static final int CODE_REQUEST_PATH = 101;
+    private static final int CODE_REQUEST_PERMISSION = 102;
     private static final String TAG = "=========" + MainActivity.class.getName();
 
     private String workPath = Environment.getExternalStorageDirectory().getPath();
@@ -34,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvMangaList;
     private boolean firstItemLoaded = true;
     private ArrayList<String> allFolderNames;
+
+    private boolean hasPermission = false;
 
     private MangaListAdapter.OnItemClickListener mOnItemClickListener = new MangaListAdapter.OnItemClickListener() {
         @Override
@@ -57,9 +66,7 @@ public class MainActivity extends AppCompatActivity {
             setSupportActionBar(mToolbar);
         }
 
-        initView();
-        initData();
-
+        checkPermission();
     }
 
     @Override
@@ -73,8 +80,13 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.mi_select_path:
-                Intent spIntent = new Intent(MainActivity.this, SelectPathActivity.class);
-                startActivityForResult(spIntent, CODE_REQUEST_PATH);
+                if (hasPermission) {
+                    Intent spIntent = new Intent(MainActivity.this, SelectPathActivity.class);
+                    startActivityForResult(spIntent, CODE_REQUEST_PATH);
+                } else {
+                    Toast.makeText(this, "Need write storage permission",
+                            Toast.LENGTH_SHORT).show();
+                }
                 break;
 
             default:
@@ -114,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         rvMangaList.setAdapter(adapter);
         rvMangaList.setItemAnimator(null);
 
+        new GetMangasTask().execute(workPath);
     }
 
     private void initData() {
@@ -122,8 +135,6 @@ public class MainActivity extends AppCompatActivity {
 
         File workDir = new File(workPath);
         if (!workDir.isDirectory() || !workDir.exists()) return;
-
-        new GetMangasTask().execute(workPath);
     }
 
     private void saveWorkPath() {
@@ -180,4 +191,45 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void checkPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                Toast.makeText(this, "Need write storage permission",
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        CODE_REQUEST_PERMISSION);
+            }
+        } else {
+            hasPermission = true;
+            initData();
+            initView();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case CODE_REQUEST_PERMISSION:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    hasPermission = true;
+                    initData();
+                    initView();
+                } else {
+                    hasPermission = false;
+                    Toast.makeText(this, "Permission not granted!",
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            default:
+                hasPermission = false;
+                break;
+        }
+    }
 }
