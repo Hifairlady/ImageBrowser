@@ -21,7 +21,6 @@ public class DetailActivity extends AppCompatActivity {
     private String titleString;
     private ArrayList<String> allFolderNames;
     private int curFolderPosition;
-    private Button btnLastDir, btnNextDir;
     private int maxPosition = 0;
     private MenuItem menuItem;
 
@@ -71,7 +70,7 @@ public class DetailActivity extends AppCompatActivity {
         if (getSupportActionBar() == null) {
             setSupportActionBar(mToolbar);
         }
-        mToolbar.setTitle(titleString);
+//        mToolbar.setTitle(titleString);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,8 +78,8 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-        btnLastDir = findViewById(R.id.btn_last_dir);
-        btnNextDir = findViewById(R.id.btn_next_dir);
+        Button btnLastDir = findViewById(R.id.btn_last_dir);
+        Button btnNextDir = findViewById(R.id.btn_next_dir);
 
         btnLastDir.setOnClickListener(mOnClickListener);
         btnNextDir.setOnClickListener(mOnClickListener);
@@ -111,9 +110,9 @@ public class DetailActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.reader_menu, menu);
         menuItem = menu.getItem(0);
-        String titleString = String.valueOf(curFolderPosition + 1) + "/"
+        String indexString = String.valueOf(curFolderPosition + 1) + "/"
                 + String.valueOf(maxPosition + 1);
-        menuItem.setTitle(titleString);
+        menuItem.setTitle(indexString);
         return super.onCreateOptionsMenu(menu);
     }
 }
