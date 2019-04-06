@@ -9,6 +9,7 @@ public class MangaItem {
 
     private static final String TAG = "========" + MangaItem.class.getName();
     private String coverName, titleString, urlString;
+    private int mangaId;
 
     public MangaItem(String url, String titleString) {
         this.titleString = titleString;
@@ -36,5 +37,9 @@ public class MangaItem {
             ArrayList<String> filenames = MyUtils.filterImageFilenames(file);
             this.coverName = (filenames.size() == 0 ? null : filenames.get(0));
         }
+    }
+
+    public int getMangaId() {
+        return urlString.hashCode();
     }
 }

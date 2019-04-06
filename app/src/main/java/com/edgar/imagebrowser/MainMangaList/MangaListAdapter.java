@@ -57,7 +57,8 @@ public class MangaListAdapter extends RecyclerView.Adapter {
         normalViewHolder.clRootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnItemClickListener.onItemClick(mangaItems.get(normalViewHolder.getAdapterPosition()));
+                int pos = normalViewHolder.getAdapterPosition();
+                mOnItemClickListener.onItemClick(mangaItems.get(pos), pos);
             }
         });
     }
@@ -67,8 +68,13 @@ public class MangaListAdapter extends RecyclerView.Adapter {
         return (mangaItems == null ? 0 : mangaItems.size());
     }
 
+    @Override
+    public long getItemId(int position) {
+        return mangaItems.get(position).getMangaId();
+    }
+
     public interface OnItemClickListener {
-        void onItemClick(MangaItem mangaItem);
+        void onItemClick(MangaItem mangaItem, int position);
     }
 
     public void addAllItems(ArrayList<MangaItem> items) {

@@ -18,12 +18,13 @@ public class MyUtils {
         });
     }
 
-    public static ArrayList<String> sortFilesByDirectory(File[] files) {
+    public static ArrayList<String> sortFilesByDirectory(File curDir) {
+        File[] childFolders = curDir.listFiles();
         ArrayList<String> result = new ArrayList<>();
-        for (File file : files) {
-            if (file.isDirectory() && file.exists() && file.list().length != 0
-                    && !file.getName().startsWith(".")) {
-                result.add(file.getAbsolutePath());
+        for (File childFolder : childFolders) {
+            if (childFolder.isDirectory() && childFolder.exists() && childFolder.list().length != 0
+                    && !childFolder.getName().startsWith(".")) {
+                result.add(childFolder.getAbsolutePath());
             }
         }
         sortStringList(result);
@@ -40,6 +41,22 @@ public class MyUtils {
                     || filename.endsWith(".JPEG") || filename.endsWith(".PNG")
                     || filename.endsWith(".BMP")) && !filename.startsWith(".") && !tmp.isDirectory()) {
                 result.add(filename);
+            }
+        }
+        sortStringList(result);
+        return result;
+    }
+
+    public static ArrayList<String> filterImageFilenames(File file, String urlString) {
+        ArrayList<String> result = new ArrayList<>();
+        String[] filenames = file.list();
+        for (String filename : filenames) {
+            File tmp = new File(filename);
+            if ((filename.endsWith(".jpg") || filename.endsWith(".jpeg") || filename.endsWith(".png")
+                    || filename.endsWith(".bmp") || filename.endsWith(".JPG")
+                    || filename.endsWith(".JPEG") || filename.endsWith(".PNG")
+                    || filename.endsWith(".BMP")) && !filename.startsWith(".") && !tmp.isDirectory()) {
+                result.add(urlString + "/" + filename);
             }
         }
         sortStringList(result);

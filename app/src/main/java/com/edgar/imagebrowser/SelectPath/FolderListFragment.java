@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +21,10 @@ import java.util.ArrayList;
 
 public class FolderListFragment extends Fragment {
     private static final String REQUEST_PATH = "REQUEST_PATH";
+    private static final String FIRST_POSITION = "FIRST_POSITION";
     private static final String TAG = "=============" + FolderListFragment.class.getName();
     private String requestPath;
+    private int firstPosition = 0;
     private RecyclerView rvFolderList;
     private ArrayList<String> folderPathList = new ArrayList<>();
     private TextView tvCurAbsPath;
@@ -34,10 +35,11 @@ public class FolderListFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static FolderListFragment newInstance(String requestPath) {
+    public static FolderListFragment newInstance(String requestPath, int firstPosition) {
         FolderListFragment fragment = new FolderListFragment();
         Bundle args = new Bundle();
         args.putString(REQUEST_PATH, requestPath);
+        args.putInt(FIRST_POSITION, firstPosition);
         fragment.setArguments(args);
         return fragment;
     }
@@ -47,6 +49,7 @@ public class FolderListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             requestPath = getArguments().getString(REQUEST_PATH);
+            firstPosition = getArguments().getInt(FIRST_POSITION, 0);
         }
     }
 
@@ -76,7 +79,8 @@ public class FolderListFragment extends Fragment {
                 } else {
                     nextPath = requestPath + "/" + folderPathList.get(position);
                 }
-                mCallbackValue.onValueCallback(nextPath);
+                int firstPosition = ((LinearLayoutManager) rvFolderList.getLayoutManager()).findFirstVisibleItemPosition();
+                mCallbackValue.onValueCallback(nextPath, requestPath, firstPosition);
             }
         });
 
@@ -97,7 +101,7 @@ public class FolderListFragment extends Fragment {
     }
 
     public interface CallbackValue {
-        void onValueCallback(String nextPath);
+        void onValueCallback(String nextPath, String curPath, int position);
     }
 
     private class AddPathTask extends AsyncTask<String, Void, Void> {
@@ -105,7 +109,6 @@ public class FolderListFragment extends Fragment {
         protected Void doInBackground(String... strings) {
             folderPathList.clear();
             String filePath = strings[0];
-            Log.d(TAG, "doInBackground: " + filePath);
             File curDir = new File(filePath);
             if (!curDir.exists() || !curDir.isDirectory()) return null;
 
@@ -127,6 +130,7 @@ public class FolderListFragment extends Fragment {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             adapter.notifyDataSetChanged();
+            rvFolderList.scrollToPosition(firstPosition);
         }
     }
 

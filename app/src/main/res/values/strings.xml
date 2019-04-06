@@ -10,4 +10,6 @@
     <string name="STRING_CURRENT_ABS_PATH">Current absolute path</string>
     <string name="STRING_MANGA_TITLE">Display manga title here</string>
     <string name="STRING_DETAIL_ACTIVITY_TITLE">Detail</string>
+    <string name="STRING_LAST_DIR">Last Dir</string>
+    <string name="STRING_NEXT_DIR">Next Dir</string>
 </resources>

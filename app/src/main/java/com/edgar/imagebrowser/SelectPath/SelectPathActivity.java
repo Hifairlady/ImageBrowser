@@ -15,6 +15,7 @@ import android.view.View;
 import com.edgar.imagebrowser.R;
 
 import java.io.File;
+import java.util.HashMap;
 
 public class SelectPathActivity extends AppCompatActivity {
 
@@ -22,11 +23,13 @@ public class SelectPathActivity extends AppCompatActivity {
     private static final String TAG = "==========" + SelectPathActivity.class.getName();
     private String last_path = ROOT_PATH;
     private String finalPath = ROOT_PATH;
+    private HashMap<String, Integer> positionMap = new HashMap<>();
 
     private FolderListFragment.CallbackValue mCallbackValue = new FolderListFragment.CallbackValue() {
         @Override
-        public void onValueCallback(String nextPath) {
+        public void onValueCallback(String nextPath, String curPath, int position) {
             switchFragment(nextPath);
+            positionMap.put(curPath, position);
         }
     };
 
@@ -92,7 +95,8 @@ public class SelectPathActivity extends AppCompatActivity {
             last_path = "";
         }
         finalPath = requestPath;
-        FolderListFragment listFragment = FolderListFragment.newInstance(requestPath);
+        int firstPosition = positionMap.getOrDefault(requestPath, 0);
+        FolderListFragment listFragment = FolderListFragment.newInstance(requestPath, firstPosition);
         listFragment.setCallbackValue(mCallbackValue);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
