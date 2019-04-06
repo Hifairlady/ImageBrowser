@@ -1,6 +1,5 @@
 package com.edgar.imagebrowser;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,15 +7,16 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.edgar.imagebrowser.MainMangaList.MangaItem;
+import com.edgar.imagebrowser.MainMangaList.MangaListAdapter;
 import com.edgar.imagebrowser.SelectPath.SelectPathActivity;
 
 import java.io.File;
@@ -31,13 +31,19 @@ public class MainActivity extends AppCompatActivity {
     private static final int GET_MANGA_LIST_FINISHED = 104;
     private static final String TAG = "=========" + MainActivity.class.getName();
     private String workPath = Environment.getExternalStorageDirectory().getPath();
-    private ArrayList<MangaItem> mangaItems = new ArrayList<>();
     private MangaListAdapter adapter;
-    private SwipeRefreshLayout srlMangaList;
     private RecyclerView rvMangaList;
-    private boolean isLoading = false;
 
     private Handler mHandler;
+    private MangaListAdapter.OnItemClickListener mOnItemClickListener = new MangaListAdapter.OnItemClickListener() {
+        @Override
+        public void onItemClick(MangaItem mangaItem) {
+            String urlString = mangaItem.getUrlString();
+            Intent intent = new Intent(MainActivity.this, ReaderActivity.class);
+            intent.putExtra("URL_STRING", urlString);
+            startActivity(intent);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                     workPath = data.getStringExtra("WORK_PATH");
                 }
                 saveWorkPath();
-                new GetMangaListThread(getBaseContext(), workPath).start();
+                new GetMangaListThread(workPath).start();
                 break;
 
             default:
@@ -96,23 +102,13 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
 
         rvMangaList = findViewById(R.id.rv_manga_list);
-        RecyclerView.LayoutManager layoutManager = new MyLinearLayoutManager(this);
-        ((MyLinearLayoutManager) layoutManager).setOrientation(LinearLayoutManager.VERTICAL);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        ((LinearLayoutManager) layoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         rvMangaList.setLayoutManager(layoutManager);
         adapter = new MangaListAdapter(this);
+        adapter.setOnItemClickListener(mOnItemClickListener);
         rvMangaList.setAdapter(adapter);
 
-        srlMangaList = findViewById(R.id.srl_manga_list);
-        srlMangaList.setColorSchemeColors(0xFFFBB8AC);
-        srlMangaList.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (!isLoading) {
-                    Log.d(TAG, "onRefresh: ");
-                    new GetMangaListThread(getBaseContext(), workPath).start();
-                }
-            }
-        });
     }
 
     private void initData() {
@@ -128,9 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 super.handleMessage(msg);
                 switch (msg.what) {
                     case GET_MANGA_LIST_FAILED:
-                        isLoading = false;
-                        srlMangaList.setRefreshing(false);
-                        new GetMangaListThread(getBaseContext(), workPath).start();
+                        new GetMangaListThread(workPath).start();
                         break;
 
                     case GET_MANGA_LIST_SUCCESS:
@@ -138,8 +132,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
 
                     case GET_MANGA_LIST_FINISHED:
-                        isLoading = false;
-                        srlMangaList.setRefreshing(false);
+                        Snackbar.make(rvMangaList, "Load completed!", Snackbar.LENGTH_SHORT).show();
                         break;
 
                     default:
@@ -148,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        new GetMangaListThread(this, workPath).start();
+        new GetMangaListThread(workPath).start();
     }
 
     private void saveWorkPath() {
@@ -166,12 +159,9 @@ public class MainActivity extends AppCompatActivity {
     private class GetMangaListThread extends Thread {
 
         private String urlString;
-        private Context mContext;
 
-        public GetMangaListThread(Context context, String urlString) {
-            this.mContext = context;
+        public GetMangaListThread(String urlString) {
             this.urlString = urlString;
-            isLoading = true;
             adapter.removeAllItems();
         }
 
@@ -193,7 +183,6 @@ public class MainActivity extends AppCompatActivity {
                         File childFile = new File(urlString + "/" + childFilename);
                         if (childFile.isDirectory() && !childFilename.startsWith(".")) {
                             MangaItem item = new MangaItem(childFile.getAbsolutePath(), childFilename);
-//                            mangaItems.add(item);
                             adapter.addItem(item);
                             message = Message.obtain();
                             message.what = GET_MANGA_LIST_SUCCESS;

@@ -12,6 +12,7 @@
         app:cardElevation="2dp">
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/cl_root_view"
             android:layout_width="match_parent"
             android:layout_height="128dp"
             android:clickable="true"

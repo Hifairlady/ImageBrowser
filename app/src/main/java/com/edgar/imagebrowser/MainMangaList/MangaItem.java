@@ -1,4 +1,6 @@
-package com.edgar.imagebrowser;
+package com.edgar.imagebrowser.MainMangaList;
+
+import com.edgar.imagebrowser.MyUtils;
 
 import java.io.File;
 import java.util.ArrayList;
