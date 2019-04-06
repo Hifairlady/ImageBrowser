@@ -4,8 +4,9 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -18,9 +19,9 @@ public class DetailActivity extends AppCompatActivity {
     private String urlString;
     private ArrayList<String> allFolderNames;
     private int curFolderPosition;
-    private RecyclerView rvReader;
     private Button btnLastDir, btnNextDir;
     private int maxPosition = 0;
+    private MenuItem menuItem;
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
@@ -30,6 +31,9 @@ public class DetailActivity extends AppCompatActivity {
                     if (curFolderPosition > 0) {
                         curFolderPosition--;
                         switchReader(allFolderNames.get(curFolderPosition));
+                        String titleString = String.valueOf(curFolderPosition + 1) + "/"
+                                + String.valueOf(maxPosition + 1);
+                        menuItem.setTitle(titleString);
                     }
                     break;
 
@@ -37,6 +41,9 @@ public class DetailActivity extends AppCompatActivity {
                     if (curFolderPosition < maxPosition) {
                         curFolderPosition++;
                         switchReader(allFolderNames.get(curFolderPosition));
+                        String titleString = String.valueOf(curFolderPosition + 1) + "/"
+                                + String.valueOf(maxPosition + 1);
+                        menuItem.setTitle(titleString);
                     }
                     break;
 
@@ -96,6 +103,13 @@ public class DetailActivity extends AppCompatActivity {
 
     }
 
-
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.reader_menu, menu);
+        menuItem = menu.getItem(0);
+        String titleString = String.valueOf(curFolderPosition + 1) + "/"
+                + String.valueOf(maxPosition + 1);
+        menuItem.setTitle(titleString);
+        return super.onCreateOptionsMenu(menu);
+    }
 }
