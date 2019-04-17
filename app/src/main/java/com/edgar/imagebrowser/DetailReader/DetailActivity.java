@@ -1,5 +1,6 @@
 package com.edgar.imagebrowser.DetailReader;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -8,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import com.edgar.imagebrowser.R;
@@ -23,6 +25,8 @@ public class DetailActivity extends AppCompatActivity {
     private int curFolderPosition;
     private int maxPosition = 0;
     private MenuItem menuItem;
+    int width = 0;
+    int height = 0;
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
@@ -88,6 +92,10 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void initData() {
+        WindowManager wm = (WindowManager) this
+                .getSystemService(Context.WINDOW_SERVICE);
+        width = wm.getDefaultDisplay().getWidth();
+        height = wm.getDefaultDisplay().getHeight();
 
         allFolderNames = getIntent().getStringArrayListExtra("ALL_FOLDER_NAMES");
         curFolderPosition = getIntent().getIntExtra("CUR_FOLDER_POSITION", 0);
@@ -98,7 +106,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private void switchReader(String requestPath) {
 
-        ReaderFragment readerFragment = ReaderFragment.newInstance(requestPath);
+        ReaderFragment readerFragment = ReaderFragment.newInstance(requestPath, width);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.reader_container, readerFragment);

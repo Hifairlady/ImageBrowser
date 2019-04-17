@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.edgar.imagebrowser.GlideApp;
+import com.edgar.imagebrowser.MyTransformation;
 import com.edgar.imagebrowser.R;
 
 import java.io.File;
@@ -19,9 +20,11 @@ public class ReaderListAdapter extends RecyclerView.Adapter {
     private static final String TAG = "============" + ReaderListAdapter.class.getName();
     private ArrayList<String> imagePaths = new ArrayList<>();
     private Context mContext;
+    private int width;
 
-    public ReaderListAdapter(Context mContext) {
+    public ReaderListAdapter(Context mContext, int width) {
         this.mContext = mContext;
+        this.width = width;
     }
 
     @NonNull
@@ -39,6 +42,7 @@ public class ReaderListAdapter extends RecyclerView.Adapter {
                 .load(new File(imagePaths.get(i)))
                 .placeholder(R.drawable.loading_bg)
                 .error(R.drawable.error_bg)
+                .transform(new MyTransformation(width))
                 .into(vh.ivImage);
     }
 

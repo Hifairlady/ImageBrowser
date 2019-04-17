@@ -22,9 +22,11 @@ import java.util.ArrayList;
 public class ReaderFragment extends Fragment {
 
     private static final String URL_STRING = "URL_STRING";
+    private static final String SCREEN_WITH = "SCREEN_WITH";
     private static final String TAG = "============" + ReaderFragment.class.getName();
 
     private String urlString;
+    private int width;
     private RecyclerView rvReader;
     private ReaderListAdapter adapter;
 
@@ -33,10 +35,11 @@ public class ReaderFragment extends Fragment {
     }
 
 
-    public static ReaderFragment newInstance(String urlString) {
+    public static ReaderFragment newInstance(String urlString, int width) {
         ReaderFragment fragment = new ReaderFragment();
         Bundle args = new Bundle();
         args.putString(URL_STRING, urlString);
+        args.putInt(SCREEN_WITH, width);
         fragment.setArguments(args);
         return fragment;
     }
@@ -46,6 +49,7 @@ public class ReaderFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             urlString = getArguments().getString(URL_STRING);
+            width = getArguments().getInt(SCREEN_WITH);
         }
     }
 
@@ -58,7 +62,7 @@ public class ReaderFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         ((LinearLayoutManager) layoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         rvReader.setLayoutManager(layoutManager);
-        adapter = new ReaderListAdapter(getActivity());
+        adapter = new ReaderListAdapter(getActivity(), width);
         rvReader.setAdapter(adapter);
         rvReader.setItemAnimator(null);
 
